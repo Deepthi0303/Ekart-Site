@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Verify OTP</title>
+</head>
+<body>
+	<h1>OTP Verification</h1>
+	<div>
+		<h3 style="color: green;" th:text="${session.success}"></h3>
+		<h3 style="color: red;" th:text="${session.failure}"></h3>
+		<th:block th:text="${@messageRemover.remove()}"></th:block>
+	</div>
+	
+	<form action="/vendor/otp" method="post">
+		<input type="hidden" name="id" th:value="${id}"> 
+		Enter OTP: <input type="number" name="otp" required>
+		<button>Submit</button>
+	</form>
+</body>
+</html>

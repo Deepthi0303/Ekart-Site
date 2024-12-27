@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Registration</title>
+</head>
+<body>
+	<div align="center">
+		<h1>Vendor Registration</h1>
+		<form action="/vendor/register" method="post" th:object="${vendor}">
+			<table cellpadding="10">
+				<tr>
+					<td>Name</td>
+					<td><input type="text" name="name" th:field="*{name}"></td>
+					<td><span th:errors="*{name}"></span></td>
+				</tr>
+				<tr>
+					<td>Email</td>
+					<td><input type="text" name="email" th:field="*{email}"></td>
+					<td><span th:errors="*{email}"></span></td>
+				</tr>
+				<tr>
+					<td>Mobile</td>
+					<td><input type="text" name="mobile" th:field="*{mobile}"></td>
+					<td><span th:errors="*{mobile}"></span></td>
+				</tr>
+				<tr>
+					<td>Password</td>
+					<td><input type="text" name="password" th:field="*{password}"></td>
+					<td><span th:errors="*{password}"></span></td>
+				</tr>
+				<tr>
+					<td>Confirm Password</td>
+					<td><input type="text" name="confirmPassword"
+						th:field="*{confirmPassword}"></td>
+					<td><span th:errors="*{confirmPassword}"></span></td>
+				</tr>
+			</table>
+			<button type="submit">Submit</button>
+		</form>
+
+	</div>
+</body>
+</html>
