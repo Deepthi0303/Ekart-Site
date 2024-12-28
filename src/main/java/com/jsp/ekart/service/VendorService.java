@@ -70,6 +70,34 @@ public class VendorService {
 
 	public String vendorLogin(String email, String password, HttpSession session) {
 		
-		return null;
+		Vendor vendor = repository.findByEmail(email);
+		if(vendor==null) {
+			session.setAttribute("vendor", vendor);
+			session.setAttribute("failure","Email is not registered");
+			return "redirect:/vendor/register";
+		}
+		else {
+			if(AES.decrypt(vendor.getPassword()).equals(password)) {
+				if(vendor.isVerified()) {
+					session.setAttribute("vendor", vendor);
+					session.setAttribute("success", "Account logged in");
+					return "redirect:/vendor/home";
+				}else {
+					int otp=new Random().nextInt(100000,1000000);
+					vendor.setOtp(otp);
+					emailSender.send(vendor);
+					repository.save(vendor);
+					System.err.println(vendor.getOtp());
+					session.setAttribute("success","OTP sent successfully, Please verify now");
+					return "redirect:/vendor/otp/"+vendor.getId();
+				}
+			}
+			  else {
+					session.setAttribute("failure", "Invalid Password");
+					return "redirect:/vendor/login";
+				}
+			}
+		}
+	
 	}
-}
+

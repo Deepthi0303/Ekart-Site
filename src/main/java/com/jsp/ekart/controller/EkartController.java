@@ -27,7 +27,7 @@ public class EkartController {
 		return "home.html";
 	}
 	
-	@GetMapping("/vender/register")
+	@GetMapping("/vendor/register")
 	public String loadVenderRegistration(ModelMap map,Vendor vendor) {
 		return service.loadRegistration(map, vendor);
 	}
@@ -47,13 +47,18 @@ public class EkartController {
 		return service.verifyOtp(id,otp,session);
 	}
 	
-	@GetMapping("/vender/login")
+	@GetMapping("/vendor/login")
 	public String loadVenderLogin() {
 		return "vendor-login.html";
 	}
 	
-	@PostMapping("/vender/login")
+	@PostMapping("/vendor/login")
 	public String VenderLogin(@RequestParam String email,@RequestParam String password,HttpSession session) {
 		return service.vendorLogin(email,password,session);
+	}
+	
+	@GetMapping("/vendor/home")
+	public String loadVenderHome() {
+		return "vendor-home.html";
 	}
 }
