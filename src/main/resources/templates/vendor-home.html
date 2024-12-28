@@ -5,7 +5,16 @@
 <title>Vendor Home</title>
 </head>
 <body>
-	
-	<h1>This is vendor home</h1>
+<div>
+		<h3 style="color: green;" th:text="${session.success}"></h3>
+		<h3 style="color: red;" th:text="${session.failure}"></h3>
+		<th:block th:text="${@messageRemover.remove()}"></th:block>
+	</div>
+	<div align="center">
+		<h1>Vendor home</h1>
+		<a href="/add-products"><button>Add Products</button></a>
+		<br><br>
+		<a href="/logout"><button> Logout</button></a>
+	</div>
 </body>
 </html>

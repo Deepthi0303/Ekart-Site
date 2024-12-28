@@ -1,5 +1,7 @@
 package com.jsp.ekart.controller;
 
+import java.io.IOException;
+
 import org.aspectj.apache.bcel.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.jsp.ekart.dto.Product;
 import com.jsp.ekart.dto.Vendor;
 import com.jsp.ekart.service.VendorService;
 
@@ -60,5 +63,19 @@ public class EkartController {
 	@GetMapping("/vendor/home")
 	public String loadVenderHome() {
 		return "vendor-home.html";
+	}
+	
+	@GetMapping("/add-products")
+	public String loadAddProduct(HttpSession session) {
+		return service.loadAddProduct(session);
+	}
+	
+	@PostMapping("/add-products")
+	public String addProduct(Product product,HttpSession session) throws IOException {
+		return service.addProduct(product,session);
+	}
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		return service.logout(session);
 	}
 }

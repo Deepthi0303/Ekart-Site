@@ -1,5 +1,6 @@
 package com.jsp.ekart.service;
 
+import java.io.IOException;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 
+import com.jsp.ekart.dto.Product;
 import com.jsp.ekart.dto.Vendor;
 import com.jsp.ekart.helper.AES;
+import com.jsp.ekart.helper.CloudinaryHelper;
 import com.jsp.ekart.helper.EmailSender;
+import com.jsp.ekart.repository.ProductRepository;
 import com.jsp.ekart.repository.VendorRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -24,6 +28,11 @@ public class VendorService {
 	@Autowired
 	EmailSender emailSender;
 	
+	@Autowired
+	ProductRepository repository2;
+	
+	@Autowired
+	CloudinaryHelper cloudinaryHelper;
 	public String loadRegistration(ModelMap map,Vendor vendor)
 	{
 		map.put("vendor", vendor);
@@ -74,7 +83,7 @@ public class VendorService {
 		if(vendor==null) {
 			session.setAttribute("vendor", vendor);
 			session.setAttribute("failure","Email is not registered");
-			return "redirect:/vendor/register";
+			return "redirect:/vendor/login";
 		}
 		else {
 			if(AES.decrypt(vendor.getPassword()).equals(password)) {
@@ -98,6 +107,38 @@ public class VendorService {
 				}
 			}
 		}
+
+	public String loadAddProduct(HttpSession session) {
+		if(session.getAttribute("vendor")!=null)
+		{
+			return "add-product.html";
+		}else {
+			session.setAttribute("failure", "Invalid Session, First Login");
+			return "redirect:/vendor/login";
+		}
+	}
+
+	public String addProduct(Product product,HttpSession session) throws IOException {
+		if(session.getAttribute("vendor")!=null)
+		{
+			Vendor vendor = (Vendor) session.getAttribute("vendor");
+			product.setVendor(vendor);
+			product.setImageLink(cloudinaryHelper.saveToCloudinary(product.getImage()));
+			repository2.save(product);
+			session.setAttribute("success", "Product Added Success");
+			return "redirect:/vendor/home";
+		}else {
+			session.setAttribute("failure", "Invalid Session, First Login");
+			return "redirect:/vendor/login";
+		}
+	}
+
+	public String logout(HttpSession session) {
+		session.removeAttribute("vendor");
+		session.setAttribute("success", "Logged out Success");
+		return "redirect:/";
+	}
+	
 	
 	}
 
