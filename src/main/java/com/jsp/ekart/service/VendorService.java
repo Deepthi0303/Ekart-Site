@@ -1,12 +1,14 @@
 package com.jsp.ekart.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.jsp.ekart.dto.Product;
 import com.jsp.ekart.dto.Vendor;
@@ -59,7 +61,7 @@ public class VendorService {
 			emailSender.send(vendor);
 			session.setAttribute("success","Otp sent successfully");
 			repository.save(vendor);
-			return "redirect:/vendor/otp/"+vendor.getId();
+			return "redirect:/vendor/otp/" + vendor.getId();
 		}
 	}
 	
@@ -137,6 +139,37 @@ public class VendorService {
 		session.removeAttribute("vendor");
 		session.setAttribute("success", "Logged out Success");
 		return "redirect:/";
+	}
+
+	public String manageProducts(HttpSession session, ModelMap map) {
+		Vendor vendor = (Vendor) session.getAttribute("vendor");
+		if(vendor!=null)
+		{
+			List<Product> products = repository2.findByVendor(vendor);
+			if(products.isEmpty())
+			{
+				session.setAttribute("failure","No products added");
+				return "redirect:/vendor/home";
+			}else {
+				session.setAttribute("success","Products added are");
+				map.put("products",products);
+				return "manage-product.html";
+			}
+		}else {
+			session.setAttribute("failure","Invalid Session, Login Again");
+			return "redirect:/vendor/login";
+		}
+	}
+
+	public String delete(int id, HttpSession session) {
+		if (session.getAttribute("vendor") != null) {
+		    repository2.deleteById(id);
+			session.setAttribute("success", "Product Deleted Success");
+			return "redirect:/manage-product";
+		} else {
+			session.setAttribute("failure", "Invalid Session, First Login");
+			return "redirect:/vendor/login";
+		}
 	}
 	
 	
