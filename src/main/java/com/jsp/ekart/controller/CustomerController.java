@@ -45,4 +45,14 @@ public class CustomerController {
 	public String loadCustomerLogin() {
 		return "customer-login.html";
 	}
+	
+	@PostMapping("/customer/login")
+	public String customerLogin(@RequestParam String email,@RequestParam String password,HttpSession session) {
+		return service.customerLogin(email,password,session);
+	}
+	
+	@GetMapping("/customer/home")
+	public String loadCustomerHome() {
+		return "customer-home.html";
+	}
 }

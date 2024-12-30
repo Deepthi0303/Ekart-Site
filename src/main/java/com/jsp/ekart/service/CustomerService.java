@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.jsp.ekart.dto.Customer;
+import com.jsp.ekart.dto.Product;
 import com.jsp.ekart.dto.Vendor;
 import com.jsp.ekart.helper.AES;
 import com.jsp.ekart.helper.EmailSender;
@@ -67,6 +68,34 @@ public class CustomerService {
 		}else {
 			session.setAttribute("failure","Vendor account failed to create, OTP missmatch");
 			return "redirect:/customer/otp/"+customer.getId();
+		}
+	}
+
+	public String customerLogin(String email,String password,HttpSession session) {
+		Customer customer=repository3.findByEmail(email);
+		if(customer==null)
+		{
+			session.setAttribute("failure","Please login first");
+			return "redirect:/customer/login";
+		}else {
+				if(AES.decrypt(customer.getPassword()).equals(password)) {
+					if(customer.isVerified()) {
+						session.setAttribute("success", "Account Logged in Successfully");
+						return "redirect:/customer/home";
+					}else {
+						int otp=new Random().nextInt(100000,1000000);
+						customer.setOtp(otp);
+						emailSender.send(customer);
+						repository3.save(customer);
+						System.err.println(customer.getOtp());
+						session.setAttribute("success","OTP sent successfully, Please verify now");
+						return "redirect:/customer/otp/"+customer.getId();
+					}
+				}
+				else {
+					session.setAttribute("failure","Incorrect Password");
+					return "redirect:/customer/login";
+				}
 		}
 	}
 }
