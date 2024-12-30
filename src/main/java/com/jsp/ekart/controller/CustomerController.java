@@ -55,4 +55,6 @@ public class CustomerController {
 	public String loadCustomerHome() {
 		return "customer-home.html";
 	}
+	
+	
 }

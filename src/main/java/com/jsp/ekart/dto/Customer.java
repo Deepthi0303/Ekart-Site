@@ -42,5 +42,4 @@ public class Customer {
 	private int otp;
 	private boolean verified;
 	
-	
 }

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Home</title>
+</head>
+<body>
+	<div>
+		<h3 style="color: green;" th:text="${session.success}"></h3>
+		<h3 style="color: red;" th:text="${session.failure}"></h3>
+		<!-- <h3 style="color: red;" th:text="${session.admin}"></h3> -->
+		<th:block th:text="${@messageRemover.remove()}"></th:block>
+	</div>
+	<div align="center">
+		<h1>Admin home</h1>
+		<a href="/product/approve"><button>Approve Products</button></a>
+	</div>
+</body>
+</html>

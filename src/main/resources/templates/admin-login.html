@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Login</title>
+</head>
+<body>
+	<div align="center">
+	<div>
+		<h3 style="color: green;" th:text="${session.success}"></h3>
+		<h3 style="color: red;" th:text="${session.failure}"></h3>
+		<!-- <h3 style="color: red;" th:text="${session.admin}"></h3> -->
+		<th:block th:text="${@messageRemover.remove()}"></th:block>
+	</div>
+	<h1>Admin Login</h1>
+		<form action="/admin/login" method="post">
+			<table cellpadding=10>
+			<tr>
+			<td>EMail</td><td><input type="text" name="email"></td>
+			</tr>
+			<tr>
+			<td>Password</td><td><input type="text" name="password"></td>
+			</tr>
+			</table>
+			<button>Login</button>
+		</form>
+	</div>
+</body>
+</html>

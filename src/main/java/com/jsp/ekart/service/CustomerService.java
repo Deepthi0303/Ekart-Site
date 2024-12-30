@@ -3,6 +3,7 @@ package com.jsp.ekart.service;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -75,7 +76,7 @@ public class CustomerService {
 		Customer customer=repository3.findByEmail(email);
 		if(customer==null)
 		{
-			session.setAttribute("failure","Please login first");
+			session.setAttribute("failure","Please Register first, no email was found");
 			return "redirect:/customer/login";
 		}else {
 				if(AES.decrypt(customer.getPassword()).equals(password)) {
@@ -98,4 +99,6 @@ public class CustomerService {
 				}
 		}
 	}
+
+	
 }

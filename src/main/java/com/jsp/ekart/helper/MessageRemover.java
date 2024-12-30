@@ -13,5 +13,6 @@ public class MessageRemover {
 		HttpSession session = servletAttributes.getRequest().getSession();
 		session.removeAttribute("success");
 		session.removeAttribute("failure");
+		session.removeAttribute("admin");
 	}
 }

@@ -30,4 +30,6 @@ public class Product {
 	
 	@ManyToOne
 	Vendor vendor;
+	
+	private boolean approved;
 }
