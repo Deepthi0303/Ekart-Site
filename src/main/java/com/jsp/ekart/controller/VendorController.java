@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
-public class EkartController {
+public class VendorController {
 	
 	@Autowired
 	VendorService service;

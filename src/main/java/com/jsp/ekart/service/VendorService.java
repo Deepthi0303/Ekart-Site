@@ -35,6 +35,7 @@ public class VendorService {
 	
 	@Autowired
 	CloudinaryHelper cloudinaryHelper;
+	
 	public String loadRegistration(ModelMap map,Vendor vendor)
 	{
 		map.put("vendor", vendor);
