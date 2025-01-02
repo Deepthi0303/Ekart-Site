@@ -89,4 +89,14 @@ public class VendorController {
 	public String delete(@PathVariable int id,HttpSession session) {
 		return service.delete(id,session);
 	}
+	
+	@GetMapping("/edit/{id}")
+	public String editProduct(@PathVariable int id,ModelMap map,HttpSession session) {
+		return service.editProduct(id,map,session);
+	}
+	@PostMapping("/update-products")
+	public String updateProduct(@RequestParam int id,Product product,HttpSession session) throws IOException {
+		System.out.println(id);
+		return service.updateProduct(id,product,session);
+	}
 }

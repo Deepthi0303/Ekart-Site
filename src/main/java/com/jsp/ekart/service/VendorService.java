@@ -2,6 +2,7 @@ package com.jsp.ekart.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,6 +170,42 @@ public class VendorService {
 			return "redirect:/manage-product";
 		} else {
 			session.setAttribute("failure", "Invalid Session, First Login");
+			return "redirect:/vendor/login";
+		}
+	}
+
+	public String editProduct(int id, ModelMap map,HttpSession session) {
+		if(session.getAttribute("vendor")!=null)
+		{
+			Optional<Product> pro=repository2.findById(id);
+			Product product = pro.get();
+			map.put("products", product);
+			return "edit-products.html";
+		}else {
+		    session.setAttribute("failure","Session not found,Please Login First");
+			return "redirect:/vendor/login";
+		}
+	}
+
+	public String updateProduct(int id, Product product, HttpSession session) throws IOException {
+		if(session.getAttribute("vendor")!=null)
+		{
+		    Vendor vendor = (Vendor) session.getAttribute("vendor");
+		    System.out.println(vendor);
+		    Product existpro=repository2.findById(id).get();
+		    if(product.getImage()!=null && !product.getImage().isEmpty())
+		    {
+		    	product.setImageLink(cloudinaryHelper.saveToCloudinary(product.getImage()));
+		    }
+		    else {
+		    	product.setImageLink(existpro.getImageLink());
+		    }
+		    product.setVendor(vendor);
+		    repository2.save(product);
+			session.setAttribute("success", "Product Updated Success");
+			return "redirect:/manage-product";
+		}else {
+			session.setAttribute("failure","Session not found,Please Login First");
 			return "redirect:/vendor/login";
 		}
 	}
