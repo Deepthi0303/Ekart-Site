@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Viewing Products</title>
+</head>
+<body>
+<div align="center">
+	<div>
+		<h3 style="color: green;" th:if="${session.success}" th:text="${session.success}"></h3>
+		<h3 style="color: red;" th:if="${session.failure}" th:text="${session.failure}"></h3>
+		<th:block th:text="${@messageRemover.remove()}"></th:block>
+	</div>
+	<h1>List of Products</h1>
+	<table border=1>
+	<tr>
+	<th>Name</th><th>Picture</th><th>Description</th><th>Stock</th><th>Price</th><th>Category</th><th>Action</th>
+	</tr>
+	<tr th:each="p:${products}">
+	<td th:text="${p.name}"></td>
+	<td><img height="100px" width="100px" th:src="${p.imageLink}"></td>
+	<td th:text="${p.description}"></td>
+	<td th:text="${p.stock}+' Units'"></td>
+	<td th:text="${p.price}"></td>
+	<td th:text="${p.category}"></td>
+	<td>
+	<a><button>Add to Cart</button></a>
+	</td>
+	</tr>
+	</table>
+	</div>
+</body>
+</html>

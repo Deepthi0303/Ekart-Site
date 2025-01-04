@@ -56,5 +56,19 @@ public class CustomerController {
 		return "customer-home.html";
 	}
 	
+	@GetMapping("/view-products")
+	public String viewProducts(HttpSession session, ModelMap map) {
+		System.out.println(session.getAttribute("customer"));
+		return service.viewProduct(session,map);
+	}
 	
+	@GetMapping("/search-products")
+	public String searchProducts(HttpSession session) {
+		return service.searchProducts(session);
+	}
+	@PostMapping("/search-products")
+	public String search(@RequestParam String query, HttpSession session, ModelMap map) {
+		return service.search(query,session,map);
+	}
 }
+

@@ -1,5 +1,7 @@
 package com.jsp.ekart.service;
 
+import java.util.List;
+import java.util.HashSet;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import com.jsp.ekart.dto.Vendor;
 import com.jsp.ekart.helper.AES;
 import com.jsp.ekart.helper.EmailSender;
 import com.jsp.ekart.repository.CustomerRepository;
+import com.jsp.ekart.repository.ProductRepository;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -24,6 +27,9 @@ public class CustomerService {
 	
 	@Autowired
 	CustomerRepository repository3;
+	
+	@Autowired
+	ProductRepository repository4;
 	
 	@Autowired
 	EmailSender emailSender;
@@ -73,6 +79,7 @@ public class CustomerService {
 	}
 
 	public String customerLogin(String email,String password,HttpSession session) {
+		session.setAttribute("customer", email);
 		Customer customer=repository3.findByEmail(email);
 		if(customer==null)
 		{
@@ -97,6 +104,52 @@ public class CustomerService {
 					session.setAttribute("failure","Incorrect Password");
 					return "redirect:/customer/login";
 				}
+		}
+	}
+
+	public String viewProduct(HttpSession session, ModelMap map) {
+		System.out.println(session.getAttribute("customer"));
+		if (session.getAttribute("customer") != null) {
+			List<Product> products = repository4.findByApprovedTrue();
+			if (products.isEmpty()) {
+				session.setAttribute("failure", "No Products Present");
+				return "redirect:/customer/home";
+			} else {
+				map.put("products", products);
+				return "customer-view-products.html";
+			}
+		} else {
+			session.setAttribute("failure", "Invalid Session, First Login");
+			return "redirect:/customer/login";
+		}
+	}
+
+	public String searchProducts(HttpSession session) {
+		if (session.getAttribute("customer") != null) {
+			return "search.html";
+		} else {
+			session.setAttribute("failure", "Invalid Session, First Login");
+			return "redirect:/customer/login";
+		}
+		
+	}
+
+	public String search(String query, HttpSession session, ModelMap map) {
+		if (session.getAttribute("customer") != null) {
+			String toSearch = "%" + query + "%";
+			List<Product> list1 = repository4.findByNameLike(toSearch);
+			List<Product> list2 = repository4.findByDescriptionLike(toSearch);
+			List<Product> list3 = repository4.findByCategoryLike(toSearch);
+		    HashSet<Product> products = new HashSet<Product>();
+		    products.addAll(list1);
+			products.addAll(list2);
+			products.addAll(list3);
+			map.put("products", products);
+			map.put("query", query);
+			return "search.html";
+		} else {
+			session.setAttribute("failure", "Invalid Session, First Login");
+			return "redirect:/customer/login";
 		}
 	}
 
