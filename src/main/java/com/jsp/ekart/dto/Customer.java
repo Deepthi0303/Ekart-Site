@@ -1,9 +1,11 @@
 package com.jsp.ekart.dto;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -42,4 +44,6 @@ public class Customer {
 	private int otp;
 	private boolean verified;
 	
+	@OneToOne(cascade = CascadeType.ALL)
+	Cart cart=new Cart();
 }

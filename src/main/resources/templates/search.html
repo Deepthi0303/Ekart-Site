@@ -2,9 +2,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Search your need</title>
 </head>
 <body>
+<div>
+		<h3 style="color: green;" th:text="${session.success}"></h3>
+		<h3 style="color: red;" th:text="${session.failure}"></h3>
+		<th:block th:text="${@messageRemover.remove()}"></th:block>
+	</div>
 	<div align="center">
 		<h1>Search here</h1>
 		<form action="/search-products" method="post">
@@ -32,7 +37,7 @@
 						<td th:text="${p.stock}+' Units'"></td>
 						<td th:text="${p.price}"></td>
 						<td th:text="${p.category}"></td>
-						<td><a><button>Add to Cart</button></a></td>
+						<td><a th:href="'/add-cart/'+${p.id}"><button>Add to Cart</button></a></td>
 					</tr>
 				</table>
 			</div>

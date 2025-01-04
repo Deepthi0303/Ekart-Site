@@ -70,5 +70,14 @@ public class CustomerController {
 	public String search(@RequestParam String query, HttpSession session, ModelMap map) {
 		return service.search(query,session,map);
 	}
+	@GetMapping("/view-cart")
+	public String viewCart(HttpSession session, ModelMap map) {
+		return service.viewCart(session,map);
+	}
+	
+	@GetMapping("/add-cart/{id}")
+	public String addToCart(@PathVariable int id, HttpSession session) {
+	    return service.addToCart(id,session);
+	}
 }
 

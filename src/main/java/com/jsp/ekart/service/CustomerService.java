@@ -1,8 +1,10 @@
 package com.jsp.ekart.service;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +13,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.jsp.ekart.dto.Item;
+import com.jsp.ekart.dto.Cart;
 import com.jsp.ekart.dto.Customer;
 import com.jsp.ekart.dto.Product;
 import com.jsp.ekart.dto.Vendor;
@@ -18,6 +22,7 @@ import com.jsp.ekart.helper.AES;
 import com.jsp.ekart.helper.EmailSender;
 import com.jsp.ekart.repository.CustomerRepository;
 import com.jsp.ekart.repository.ProductRepository;
+
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -79,7 +84,6 @@ public class CustomerService {
 	}
 
 	public String customerLogin(String email,String password,HttpSession session) {
-		session.setAttribute("customer", email);
 		Customer customer=repository3.findByEmail(email);
 		if(customer==null)
 		{
@@ -88,6 +92,8 @@ public class CustomerService {
 		}else {
 				if(AES.decrypt(customer.getPassword()).equals(password)) {
 					if(customer.isVerified()) {
+						session.setAttribute("customer", customer);
+						System.err.println(session.getAttribute("customer"));
 						session.setAttribute("success", "Account Logged in Successfully");
 						return "redirect:/customer/home";
 					}else {
@@ -147,6 +153,74 @@ public class CustomerService {
 			map.put("products", products);
 			map.put("query", query);
 			return "search.html";
+		} else {
+			session.setAttribute("failure", "Invalid Session, First Login");
+			return "redirect:/customer/login";
+		}
+	}
+
+	public String viewCart(HttpSession session, ModelMap map) {
+		if (session.getAttribute("customer") != null) {
+			Customer customer = (Customer) session.getAttribute("customer");
+			 Cart cart = customer.getCart();
+			if (cart == null) {
+				session.setAttribute("failure", "Nothing is Present inside Cart");
+				return "redirect:/customer/home";
+			} else {
+				List<Item> items = cart.getItems();
+				if (items.isEmpty()) {
+					session.setAttribute("failure", "Nothing is Present inside Cart");
+					return "redirect:/customer/home";
+				} else {
+					map.put("items", items);
+					return "view-cart.html";
+				}
+			}
+		} else {
+			session.setAttribute("failure", "Invalid Session, First Login");
+			return "redirect:/customer/login";
+		}
+	}
+
+	public String addToCart(int id, HttpSession session) {
+		System.err.println(session.getAttribute("customer"));
+		if (session.getAttribute("customer") != null) {
+			Product product = repository4.findById(id).get();
+			if (product.getStock() > 0) {
+				Customer customer = (Customer) session.getAttribute("customer");
+				Cart cart = customer.getCart();
+				 if (cart == null) {
+		                cart = new Cart();
+		                customer.setCart(cart); // Set the initialized cart back to the customer
+		            }
+				 
+				List<Item> items = cart.getItems();
+				if (items == null) {
+	                items = new ArrayList<>();
+	                cart.setItems(items); // Set the initialized list back to the cart
+	            }
+				if (items.stream().map(x -> x.getName()).collect(Collectors.toList()).contains(product.getName())) {
+					session.setAttribute("failure", "Product Already Exists in Cart");
+					return "redirect:/customer/home";
+				} else {
+					Item item = new Item();
+					item.setName(product.getName());
+					item.setCategory(product.getCategory());
+					item.setDescription(product.getDescription());
+					item.setImageLink(product.getImageLink());
+					item.setPrice(product.getPrice());
+					item.setQuantity(1);
+					items.add(item);
+					
+				    repository3.save(customer);
+					session.setAttribute("success", "Product Added to Cart Success");
+					session.setAttribute("customer", repository3.findById(customer.getId()).get());
+					return "redirect:/customer/home";
+				}
+			} else {
+				session.setAttribute("failure", "Sorry! Product Out of Stock");
+				return "redirect:/customer/home";
+			}
 		} else {
 			session.setAttribute("failure", "Invalid Session, First Login");
 			return "redirect:/customer/login";

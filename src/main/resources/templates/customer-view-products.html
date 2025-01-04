@@ -23,8 +23,9 @@
 	<td th:text="${p.stock}+' Units'"></td>
 	<td th:text="${p.price}"></td>
 	<td th:text="${p.category}"></td>
+	<td th:text="'/add-cart/'+${p.id}"></td>
 	<td>
-	<a><button>Add to Cart</button></a>
+	<a th:href="'/add-cart/'+${p.id}"><button>Add to Cart</button></a>
 	</td>
 	</tr>
 	</table>
