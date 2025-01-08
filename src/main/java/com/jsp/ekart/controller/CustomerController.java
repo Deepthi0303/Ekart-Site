@@ -93,5 +93,10 @@ public class CustomerController {
    {
 	   return service.paymentSuccess(order,session);
    }
+   
+   @GetMapping("/view-orders")
+	public String viewOrders(HttpSession session, ModelMap map) {
+		return service.viewOrders(session,map);
+	}
 }
 
