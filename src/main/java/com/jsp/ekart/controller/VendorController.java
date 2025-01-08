@@ -99,4 +99,14 @@ public class VendorController {
 		System.out.println(id);
 		return service.updateProduct(id,product,session);
 	}
+	
+	@GetMapping("/increase/{id}")
+	public String increaseQuantity(@PathVariable int id,HttpSession session) {
+		return service.increaseQuantity(id,session);
+	}
+	
+	@GetMapping("/decrease/{id}")
+	public String decreaseQuantity(@PathVariable int id,HttpSession session) {
+		return service.decreaseQuantity(id,session);
+	}
 }

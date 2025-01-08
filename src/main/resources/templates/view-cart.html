@@ -29,9 +29,9 @@
 			<td th:text="${p.description}"></td>
 			<td th:text="${p.price}"></td>
 			<td th:text="${p.category}"></td>
-			<td>-</td>
+			<td><a th:href="'/decrease/'+${p.id}"><button>-</button></a></td>
 			<td th:text="${p.quantity}"></td>
-			<td>+</td>
+			<td><a th:href="'/increase/'+${p.id}"><button>+</button></a></td>
 		</tr>
 	</table>
 	</div>
