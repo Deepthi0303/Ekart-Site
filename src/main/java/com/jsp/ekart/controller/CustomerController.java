@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.jsp.ekart.dto.Customer;
+import com.jsp.ekart.dto.Order;
 import com.jsp.ekart.service.CustomerService;
 
 import jakarta.servlet.http.HttpSession;
@@ -79,5 +81,17 @@ public class CustomerController {
 	public String addToCart(@PathVariable int id, HttpSession session) {
 	    return service.addToCart(id,session);
 	}
+	
+	@GetMapping("/payment")
+	public String payment(HttpSession session,ModelMap map)
+	{
+		return service.payment(session,map);
+	}
+	
+   @PostMapping("/success")
+   public String paymentSuccess(Order order,HttpSession session)
+   {
+	   return service.paymentSuccess(order,session);
+   }
 }
 

@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
+import com.razorpay.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,8 +23,10 @@ import com.jsp.ekart.dto.Vendor;
 import com.jsp.ekart.helper.AES;
 import com.jsp.ekart.helper.EmailSender;
 import com.jsp.ekart.repository.CustomerRepository;
+import com.jsp.ekart.repository.OrderRepository;
 import com.jsp.ekart.repository.ProductRepository;
-
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -38,6 +42,9 @@ public class CustomerService {
 	
 	@Autowired
 	EmailSender emailSender;
+	
+	@Autowired
+	OrderRepository orderRepository;
 	
 	public String loadCustomerRegistration(ModelMap map,Customer customer) {
 	    map.put("customer", customer);
@@ -227,5 +234,71 @@ public class CustomerService {
 		}
 	}
 
+	public String payment(HttpSession session, ModelMap map) {
+			Customer customer = (Customer) session.getAttribute("customer");
+			if (session.getAttribute("customer") != null) {
+				try {
+					double amount = customer.getCart().getItems().stream().mapToDouble(i -> i.getPrice()).sum();
+					RazorpayClient client = new RazorpayClient("rzp_test_uoiVA3aDuFUZca", "OHIVfcji4kqhgPDuiFlxMVcy");
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.put("currency", "INR");
+					jsonObject.put("amount", amount * 100);
+					Order order = client.orders.create(jsonObject);
+					map.put("key", "rzp_test_uoiVA3aDuFUZca");
+					map.put("id", order.get("id"));
+					map.put("amount", amount * 100);
+					map.put("customer", customer);
+					return "payment.html";
+				} catch (RazorpayException e) {
+					session.setAttribute("failure", "Invalid Session, First Login");
+					return "redirect:/customer/login";
+				}
+			} else {
+				session.setAttribute("failure", "Invalid Session, First Login");
+				return "redirect:/customer/login";
+			}
+		}
+
+	public String paymentSuccess(com.jsp.ekart.dto.Order order, HttpSession session) {
+		if (session.getAttribute("customer") != null) {
+			Customer customer = (Customer) session.getAttribute("customer");
+			order.setCustomer(customer);
+			order.setTotalPrice(customer.getCart().getItems().stream().mapToDouble(i -> i.getPrice()).sum());
+			List<Item> items = customer.getCart().getItems();
+			System.out.println(items.size());
+			
+//			List<Item> orderItems=order.getItems();
+//			for(Item item:items) {
+//				orderItems.add(item);
+//			}
+			
+//			First this was there above one( it was not updating in database,error was showing)
+			
+			List<Item> orderItems = order.getItems();
+			for (Item item : items) {
+				Item item2 = new Item();
+				item2.setCategory(item.getCategory());
+				item2.setDescription(item.getDescription());
+				item2.setImageLink(item.getImageLink());
+				item2.setName(item.getName());
+				item2.setPrice(item.getPrice());
+				item2.setQuantity(item.getQuantity());
+				orderItems.add(item2);
+			}
+			order.setItems(orderItems);
+			orderRepository.save(order);
+			
+			
+			customer.getCart().getItems().clear();
+			repository3.save(customer);
+			
+			session.setAttribute("customer", repository3.findById(customer.getId()).get());
+			session.setAttribute("success", "Order Placed Success");
+			return "redirect:/customer/home";
+		} else {
+			session.setAttribute("failure", "Invalid Session, First Login");
+			return "redirect:/customer/login";
+		}
+	}
+	}
 	
-}
